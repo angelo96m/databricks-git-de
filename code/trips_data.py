@@ -60,7 +60,7 @@ df_yellow_sel = df_yellow.select(common_colums) \
 df_trips_data = df_green_sel.unionAll(df_yellow_sel)
 
 #Define temporary table for SQL queries
-df_trips_data.registerTempTable('trips_data')
+df_trips_data.createOrReplaceTempView('trips_data')
 
 
 df_result = spark.sql("""
