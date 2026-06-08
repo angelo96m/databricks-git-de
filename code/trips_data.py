@@ -3,9 +3,12 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 #Input data paths
-input_green = "dataset/green_tripdata_2026-01.parquet"
-input_yellow = "dataset/yellow_tripdata_2026-01.parquet"
-taxi_zone = "dataset/taxi_zone_lookup.csv"
+input_green = "/Workspace/Repos/angelo.montesarchio@agilelab.it/databricks-git-de/dataset/green_tripdata_2026-01.parquet"
+input_yellow = "/Workspace/Repos/angelo.montesarchio@agilelab.it/databricks-git-de/dataset/yellow_tripdata_2026-01.parquet"
+taxi_zone = "/Workspace/Repos/angelo.montesarchio@agilelab.it/databricks-git-de/dataset/taxi_zone_lookup.csv"
+
+#Output table name
+output_table = "trips_result"
 
 #Create Spark session
 spark = SparkSession.builder \
@@ -13,9 +16,9 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 #Read data
-df_green = (spark.read.table(input_green))
-df_yellow = (spark.read.table(input_yellow)) 
-df_zone = (spark.read.csv(taxi_zone, header=True))
+df_green = spark.read.parquet(input_green)
+df_yellow = spark.read.parquet(input_yellow) 
+df_zone = spark.read.csv(taxi_zone, header=True)
 
 #Rename columns for consistency
 df_green = df_green \
@@ -89,7 +92,6 @@ GROUP BY
     1, 2, 3
 """)
 
-df_result.coalesce(1) \
-    .write.parquet(output, mode="overwrite")
+df_result.write.mode("overwrite").saveAsTable(output_table)
 
 print("Finished successfully!!!")
